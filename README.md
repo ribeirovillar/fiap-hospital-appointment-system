@@ -1,108 +1,102 @@
 # Hospital Appointment System
 
-A microservices-based hospital appointment system built with Spring Boot.
+Sistema de agendamento hospitalar desenvolvido como parte do Tech Challenge 3 da Pós-Graduação em Arquitetura e Desenvolvimento Java da FIAP.
 
-## Project Structure
+## Arquitetura
 
-The project is organized as a monorepo with the following services:
+O sistema é composto por quatro microserviços independentes, cada um com sua própria base de dados e responsabilidades específicas.
 
-1. **auth-service**: Handles user authentication and authorization
-   - User registration and login
-   - Role-based access control (DOCTOR, NURSE, PATIENT)
-   - JWT token generation and validation
+### Auth Service
+- **Responsabilidade**: Autenticação e autorização centralizada
+- **Funcionalidades**:
+  - Cadastro de usuários (médicos, enfermeiros e pacientes)
+  - Login com geração de JWT Token
+  - Validação de tokens via gRPC para outros serviços
+  - Controle de acesso baseado em roles (DOCTOR, NURSE, PATIENT)
+- **Tecnologias**:
+  - Spring Boot 3.2
+  - Spring Security com JWT
+  - gRPC
+  - PostgreSQL
+  - Flyway
 
-2. **appointment-service**: Manages appointment scheduling
-   - Create, update, and cancel appointments
-   - Integration with notification service via RabbitMQ
-   - Role-based access to appointment operations
+### Outros Serviços (Em desenvolvimento)
+- **Appointment Service**: Gerenciamento de agendamentos
+- **Notification Service**: Sistema de notificações
+- **History Service**: Histórico médico
 
-3. **notification-service**: Handles appointment notifications
-   - Email notifications for appointments
-   - RabbitMQ message processing
-   - Notification templates
-
-4. **history-service**: Manages patient medical history
-   - GraphQL API for flexible data queries
-   - Patient history management
-   - Role-based access to medical records
-
-## Prerequisites
+## Tecnologias Principais
 
 - Java 17
-- Maven 3.8+
+- Spring Boot 3.2
+- Spring Security
+- JWT
+- gRPC
 - PostgreSQL
 - RabbitMQ
-- Docker (optional)
+- Docker
+- Maven
 
-## Setup Instructions
+## Configuração do Ambiente
 
-1. Clone the repository:
+### Pré-requisitos
+- Java 17
+- Maven 3.8+
+- Docker e Docker Compose
+- PostgreSQL (ou usar o container Docker)
+
+### Executando o Projeto
+
+1. Clone o repositório:
 ```bash
 git clone [repository-url]
-cd hospital-appointment
+cd fiap-hospital-appointment-system
 ```
 
-2. Build the project:
+2. Inicie os serviços de infraestrutura:
 ```bash
-mvn clean install
+docker-compose up -d
 ```
 
-3. Start the services:
+3. Execute o auth-service:
 ```bash
-# Start auth-service
 cd auth-service
 mvn spring-boot:run
-
-# Start appointment-service
-cd ../appointment-service
-mvn spring-boot:run
-
-# Start notification-service
-cd ../notification-service
-mvn spring-boot:run
-
-# Start history-service
-cd ../history-service
-mvn spring-boot:run
 ```
 
-## Configuration
+## Documentação da API
 
-Each service has its own `application.yml` file where you can configure:
-- Database connection
-- RabbitMQ settings
-- Service ports
-- JWT settings
-- Email configuration
+O auth-service expõe a documentação Swagger em:
+- Swagger UI: http://localhost:8081/swagger-ui.html
+- OpenAPI Spec: http://localhost:8081/api-docs
 
-## API Documentation
+### Endpoints REST
 
-Each service exposes its own API endpoints:
+- `POST /api/auth/register`: Cadastro de novos usuários
+- `POST /api/auth/login`: Autenticação e geração de token JWT
 
-- auth-service: `/api/auth/**`
-- appointment-service: `/api/appointments/**`
-- history-service: `/graphql`
+### Serviço gRPC
 
-## Security
+O auth-service expõe um serviço gRPC na porta 9090 para validação de tokens. Este serviço será utilizado pelos outros microserviços para implementar controle de acesso.
 
-The system implements:
-- JWT-based authentication
-- Role-based access control
-- Secure password storage
-- HTTPS support
+Para testar o serviço gRPC, você pode usar o Postman:
+1. Crie uma nova requisição gRPC
+2. Configure o endpoint: `localhost:9090`
+3. Use o método `ValidateTokenAndGetRole`
+4. Envie o token JWT no campo `token`
 
-## Development Guidelines
+## Estrutura do Projeto
 
-1. Follow the established package structure
-2. Write unit tests for all new features
-3. Use meaningful commit messages
-4. Follow the coding standards
-5. Document new features and changes
+```
+fiap-hospital-appointment-system/
+├── auth-service/           # Serviço de autenticação
+├── appointment-service/    # Serviço de agendamentos (em desenvolvimento)
+├── notification-service/   # Serviço de notificações (em desenvolvimento)
+├── history-service/        # Serviço de histórico (em desenvolvimento)
+├── docker-compose.yml      # Configuração dos containers
+└── pom.xml                 # POM pai do projeto
+```
 
-## Contributing
+## Autor
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request 
+Demóstenis Villar - Tech Challenge 3 - FIAP Pós-Graduação em Arquitetura e Desenvolvimento Java 
