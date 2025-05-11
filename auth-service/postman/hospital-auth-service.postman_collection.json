@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Hospital Auth Service",
+		"description": "Coleção para testar os endpoints do serviço de autenticação",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "REST Endpoints",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"doctor@hospital.com\",\n    \"password\": \"password123\",\n    \"name\": \"Dr. John Doe\",\n    \"role\": \"DOCTOR\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/register",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Endpoint para registro de novos usuários"
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"doctor@hospital.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Endpoint para autenticação e geração de token JWT"
+					}
+				}
+			]
+		},
+		{
+			"name": "gRPC Endpoints",
+			"item": [
+				{
+					"name": "Validate Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "grpc",
+							"grpc": {
+								"url": "localhost:9090",
+								"protoFile": "auth.proto",
+								"method": "ValidateTokenAndGetRole",
+								"metadata": [],
+								"body": {
+									"token": "{{jwt_token}}"
+								}
+							}
+						},
+						"url": {
+							"raw": "grpc://localhost:9090",
+							"protocol": "grpc",
+							"host": ["localhost"],
+							"port": "9090"
+						},
+						"description": "Endpoint gRPC para validação de tokens"
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [""]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string",
+			"description": "Token JWT obtido após o login"
+		}
+	]
+} 

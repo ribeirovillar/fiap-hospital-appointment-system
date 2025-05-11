@@ -1,27 +1,107 @@
 # Auth Service
 
-## Descrição
-O Auth Service é um microserviço responsável pela autenticação e autorização do sistema de agendamento hospitalar. Ele gerencia usuários, autenticação via JWT e fornece endpoints gRPC para validação de tokens e verificação de permissões.
+Serviço de autenticação e autorização do sistema de agendamento hospitalar.
 
-## Tecnologias Utilizadas
+## Funcionalidades
 
-### Backend
+- Cadastro de usuários (médicos, enfermeiros e pacientes)
+- Login com geração de JWT Token
+- Validação de tokens via gRPC para outros serviços
+- Controle de acesso baseado em roles (DOCTOR, NURSE, PATIENT)
+
+## Tecnologias
+
 - Java 17
-- Spring Boot 3.x
-- Spring Security
-- Spring Data JPA
-- PostgreSQL
-- Flyway (Migrações de banco de dados)
-- JWT (JSON Web Tokens)
+- Spring Boot 3.2
+- Spring Security com JWT
 - gRPC
+- PostgreSQL
+- Flyway
 - MapStruct
 - Lombok
-- OpenAPI/Swagger
 
-### Testes
-- JUnit 5
-- Spring Test
-- H2 Database (para testes)
+## Configuração
+
+### Pré-requisitos
+- Java 17
+- Maven 3.8+
+- PostgreSQL (ou usar o container Docker)
+- Postman (para testar os endpoints)
+
+### Variáveis de Ambiente
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hospital_auth
+    username: postgres
+    password: postgres
+
+jwt:
+  secret: your-secret-key
+  expiration: 86400000  # 24 horas
+
+grpc:
+  server:
+    port: 9090
+```
+
+### Executando o Projeto
+```bash
+# Compilar
+mvn clean install
+
+# Executar
+mvn spring-boot:run
+```
+
+## Documentação da API
+
+- Swagger UI: http://localhost:8081/swagger-ui.html
+- OpenAPI Spec: http://localhost:8081/api-docs
+
+### Testando a API
+
+#### Usando Postman
+
+1. Importe a coleção do Postman:
+   - Abra o Postman
+   - Clique em "Import"
+   - Selecione o arquivo `postman/hospital-auth-service.postman_collection.json`
+
+2. Endpoints REST:
+   - `POST /api/auth/register`: Cadastro de novos usuários
+   - `POST /api/auth/login`: Autenticação e geração de token JWT
+
+3. Endpoint gRPC:
+   - Configure o ambiente gRPC no Postman:
+     1. Clique em "New" > "gRPC Request"
+     2. Configure o endpoint: `localhost:9090`
+     3. Importe o arquivo `auth.proto` do diretório `src/main/proto`
+     4. Selecione o método `ValidateTokenAndGetRole`
+     5. Use a variável `{{jwt_token}}` no campo `token` (será preenchida automaticamente após o login)
+
+#### Exemplo de Fluxo de Teste
+
+1. Registre um novo usuário usando o endpoint `/register`
+2. Faça login usando o endpoint `/login` para obter o token JWT
+3. Use o token obtido para testar o endpoint gRPC de validação
+
+## Estrutura do Projeto
+
+```
+auth-service/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/fiap/hospital/auth/
+│   │   │       ├── domain/          # Entidades e regras de negócio
+│   │   │       ├── application/     # Casos de uso e serviços
+│   │   │       └── infrastructure/  # Adaptadores e configurações
+│   │   └── resources/
+│   └── test/
+├── postman/                         # Coleção do Postman
+└── pom.xml
+```
 
 ## Arquitetura Hexagonal (Ports and Adapters)
 
@@ -65,61 +145,6 @@ O serviço utiliza a Arquitetura Hexagonal, que divide a aplicação em três ca
       - `UserDetailsAdapter`: Adaptador para Spring Security
   - `config/`: Configurações da aplicação
   - `filters/`: Filtros (ex: JwtAuthenticationFilter)
-
-## Funcionalidades Principais
-
-1. **Autenticação**
-   - Login com username/password
-   - Geração de JWT
-   - Validação de tokens
-
-2. **Gerenciamento de Usuários**
-   - Registro de novos usuários
-   - Diferentes níveis de acesso (DOCTOR, NURSE, PATIENT)
-
-3. **API gRPC**
-   - Validação de tokens
-   - Verificação de permissões
-   - Integração com outros microserviços
-
-## Configuração
-
-### Pré-requisitos
-- Java 17
-- Maven
-- PostgreSQL
-
-### Variáveis de Ambiente
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/hospital_auth
-    username: postgres
-    password: postgres
-
-jwt:
-  secret: your-secret-key
-  expiration: 86400000  # 24 horas em milissegundos
-
-grpc:
-  server:
-    port: 9090
-```
-
-### Executando o Projeto
-```bash
-# Compilar
-mvn clean install
-
-# Executar
-mvn spring-boot:run
-```
-
-## Documentação da API
-
-A documentação da API está disponível via Swagger UI:
-- URL: `http://localhost:8081/swagger-ui.html`
-- API Docs: `http://localhost:8081/api-docs`
 
 ## Testes
 
