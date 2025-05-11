@@ -1,0 +1,62 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hospital_auth
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    connect-retries: 10
+    init-sql: "SELECT 1"
+  sql:
+    init:
+      mode: never
+
+jwt:
+  secret: thisissupersecretkeyandshouldbeatleast32bytes
+  expiration: 86400000
+
+# gRPC Configuration
+grpc:
+  server:
+    port: 9090
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    filter: true
+    displayRequestDuration: true
+    persistAuthorization: true
+  api-docs:
+    path: /api-docs
+    enabled: true
+  show-actuator: true
+
+management:
+  health:
+    db:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  level:
+    com.fiap.hospital.auth.infrastructure.adapters.grpc: DEBUG
+    com.fiap.hospital.auth.infrastructure.config: DEBUG 

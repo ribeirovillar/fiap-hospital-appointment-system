@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.fiap.hospital.auth.proto";
+option java_outer_classname = "AuthServiceProto";
+
+package auth;
+
+// The authentication service definition
+service AuthService {
+  // Validates a JWT token and returns the user role
+  rpc ValidateTokenAndGetRole (TokenValidationRequest) returns (TokenValidationResponse) {}
+}
+
+// The request message containing the JWT token
+message TokenValidationRequest {
+  string token = 1;
+}
+
+// The response message containing validation result and user role
+message TokenValidationResponse {
+  bool is_valid = 1;
+  UserRole role = 2;
+  string error_message = 3;
+}
+
+// Enum representing user roles
+enum UserRole {
+  UNKNOWN = 0;
+  DOCTOR = 1;
+  NURSE = 2;
+  PATIENT = 3;
+} 
